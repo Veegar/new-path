@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Heartfelt Message</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(135deg, #0a0a2a, #1a0033);
+      overflow: hidden;
+      font-family: 'Georgia', 'Times New Roman', serif;
+      position: relative;
+      color: #04fffb;
+    }
+
+    #lottie-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    .text-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 2;
+      padding: 5%;
+      text-align: center;
+    }
+
+    .message {
+      font-size: clamp(1.1rem, 2.5vw, 1.8rem);
+      text-align: center;
+      line-height: 1.8;
+      max-width: 900px;
+      text-shadow: 0 0 10px rgba(4, 255, 251, 0.7);
+      min-height: 60vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      border-radius: 15px;
+      /* Removed background, box-shadow and border for transparency */
+    }
+
+    .floating-hearts {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+      background-color: black; /* black background behind emojis */
+    }
+
+    .floating-heart {
+      position: absolute;
+      color: #ff3366;
+      font-size: 28px;
+      animation: float 10s infinite linear;
+      opacity: 0;
+      text-shadow: 0 0 10px rgba(255, 0, 85, 0.9);
+      filter: drop-shadow(0 0 5px #ff0066);
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(100vh) translateX(-10%) rotate(0deg);
+        opacity: 0;
+      }
+      5% {
+        opacity: 1;
+      }
+      95% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100px) translateX(10%) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 3px;
+      height: 1.2em;
+      background-color: #04fffb;
+      margin-left: 2px;
+      vertical-align: middle;
+      animation: blink 0.8s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .message {
+        font-size: clamp(1rem, 3vw, 1.5rem);
+        line-height: 1.6;
+        padding: 15px;
+      }
+      
+      .floating-heart {
+        font-size: 22px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .message {
+        font-size: clamp(1.0rem, 4.5vw, 2.2rem);
+        line-height: 1.5;
+        padding: 10px;
+      }
+    }
+  </style>
+  <!-- Lottie player script -->
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+</head>
+<body>
+  <!-- Lottie Background -->
+  <div id="lottie-container">
+    <lottie-player
+      src="https://lottie.host/68e6001e-e77e-433c-9945-a1bce352d7dd/x1CM3jMmhr.json"
+      background="transparent"
+      speed="1"
+      loop
+      autoplay
+      style="width: 100%; height: 100%;"
+    ></lottie-player>
+  </div>
+
+  <!-- Floating hearts effect -->
+  <div class="floating-hearts" id="hearts-container"></div>
+
+  <!-- Content container -->
+  <div class="text-container">
+    <div class="message" id="message-text"></div>
+  </div>
+
+  <script>
+    // Updated full message
+    const fullMessage = "This love is sweet if we head in a new direction. I'll simply be the kind of man your heart can finally rest with—because I lead with calm, protect with care, and love with the kind of depth that doesn't fade when things get hard. I know we've had our storms, but I'm not here to relive the past—I'm here to rebuild something beautiful. No pressure, just peace. Remember peace is not just my task but your objective too. And if being with me makes you break your rules, it's because love like this doesn't follow rules—it brings healing where rules once protected wounds. I love you darling💝";
+
+    // Configuration
+    const typingSpeed = 60;  // slower typing speed
+    const erasingSpeed = 10; // erasing speed
+    const pauseBeforeErase = 4000; // pause after typing before erasing
+    const pauseAfterErase = 2000; // pause after erasing before restart
+    const cursor = '<span class="cursor"></span>';
+
+    // DOM elements
+    const messageElement = document.getElementById('message-text');
+
+    let currentIndex = 0;
+    let isTyping = true;
+    let isErasing = false;
+
+    function typeWriter() {
+      if (isTyping) {
+        if (currentIndex < fullMessage.length) {
+          // Add next character
+          messageElement.innerHTML = fullMessage.substring(0, currentIndex + 1) + cursor;
+          currentIndex++;
+          setTimeout(typeWriter, typingSpeed);
+        } else {
+          // Finished typing
+          isTyping = false;
+          messageElement.innerHTML = fullMessage; // Remove cursor
+
+          // Pause before starting to erase
+          setTimeout(() => {
+            isErasing = true;
+            typeWriter();
+          }, pauseBeforeErase);
+        }
+      } else if (isErasing) {
+        if (currentIndex > 0) {
+          // Erase one character from the end
+          const erasedMessage = fullMessage.substring(0, currentIndex - 1);
+          messageElement.innerHTML = erasedMessage + cursor;
+          currentIndex--;
+          setTimeout(typeWriter, erasingSpeed);
+        } else {
+          // Finished erasing
+          isErasing = false;
+          messageElement.innerHTML = ''; // Clear message
+
+          // Pause before restarting
+          setTimeout(() => {
+            isTyping = true;
+            currentIndex = 0;
+            typeWriter();
+          }, pauseAfterErase);
+        }
+      }
+    }
+
+    // Floating hearts effect
+    function createFloatingHearts() {
+      const container = document.getElementById('hearts-container');
+      const heartCount = 40;
+      const heartIcons = ['❤', '💖', '💘', '💝'];
+
+      for (let i = 0; i < heartCount; i++) {
+        const heart = document.createElement('div');
+        heart.classList.add('floating-heart');
+        heart.innerHTML = heartIcons[Math.floor(Math.random() * heartIcons.length)];
+        heart.style.left = `${Math.random() * 100}%`;
+        heart.style.animationDuration = `${Math.random() * 7 + 8}s`;
+        heart.style.animationDelay = `${Math.random() * 3}s`;
+        heart.style.fontSize = `${Math.random() * 20 + 25}px`;
+        heart.style.color = `hsl(${Math.random() * 10 + 340}, 100%, 65%)`;
+        container.appendChild(heart);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      typeWriter();
+      createFloatingHearts();
+    });
+  </script>
+</body>
+</html>
